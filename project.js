@@ -238,7 +238,7 @@ function createBarChart() {
 	     		.style("top", (d3.event.clientY - 50) + "px");
 
 	     	d3.select(this)
-	     		.style("fill", "antiquewhite");	
+	     		.style("fill", "#fbf9f3white");	
      	} 
 
      })
@@ -317,7 +317,7 @@ function makePlayerCard(player){
 	    .attr("y", 100)
 	    .attr("width", 300)
 	    .attr("height", 230)
-	    .style("fill","antiquewhite")
+	    .style("fill","#fbf9f3white")
 	    .style("stroke","#313639")
 	    .style("stroke-width", 1);
 
@@ -326,7 +326,7 @@ function makePlayerCard(player){
    		  .style("font", "25px sans-serif")
    		  .attr("x", 7)
    		  .attr("y", 40)
-   		  .style("fill","antiquewhite")
+   		  .style("fill","#fbf9f3white")
    		  .text(player.name);
 
    	// MLB Team...................................................
@@ -342,7 +342,7 @@ function makePlayerCard(player){
    		  .style("font", "15px sans-serif")
    		  .attr("x", 7)
    		  .attr("y", 64)
-   		  .style("fill","antiquewhite")
+   		  .style("fill","#fbf9f3white")
    		  .text(mlbt);
 
    	// Position...................................................
@@ -355,7 +355,7 @@ function makePlayerCard(player){
    		  .style("font", "20px sans-serif")
    		  .attr("x", new_x + 5)
    		  .attr("y", 64)
-   		  .style("fill", "antiquewhite")
+   		  .style("fill", "#fbf9f3white")
    		  .text(position);
 
    	// Fantasy Team..................................................
@@ -380,7 +380,7 @@ function makePlayerCard(player){
    		card_g.append("text")
    			  .attr("x", new_x)
    			  .attr("y", 87)
-   			  .style("fill", "antiquewhite")
+   			  .style("fill", "#fbf9f3white")
    			  .style("font", "18px sans-serif")
    		  	  .text(" $" + player.salary);
    	}
@@ -530,7 +530,7 @@ function makePlayerCard(player){
 function getOwnershipColor(status, shaded) {
 	if (!shaded) {
 		if (status === "All") {
-	  		return "antiquewhite";
+	  		return "#fbf9f3white";
   		}
   		if (status === "Free Agent") {
   			return d3.rgb(245, 206, 148);
@@ -708,7 +708,7 @@ function createPositionalFilter() {
 			if (d[1]) {
 				d3.select(this).style("fill", "#313639");
 			} else {
-				d3.select(this).style("fill", "antiquewhite");
+				d3.select(this).style("fill", "#fbf9f3white");
 			}
 			makePositionalTitles();
 		})
@@ -723,7 +723,7 @@ function createPositionalFilter() {
 			if (d[1]) {
 				d3.select(this).style("fill", "#313639");
 			} else {
-				d3.select(this).style("fill", "antiquewhite");
+				d3.select(this).style("fill", "#fbf9f3white");
 			}
 			makePositionalTitles();
 		})
@@ -736,7 +736,7 @@ function createPositionalFilter() {
 		 		makePositionalTitles();
 		 	} else {
 		 		// flip the colors
-		 		d3.select(this).style("fill", "antiquewhite");
+		 		d3.select(this).style("fill", "#fbf9f3white");
 		 		makePositionalTitles();
 		 	}
 
@@ -762,7 +762,7 @@ function makePositionalTitles() {
 		.attr("text-anchor", "middle")
 		.attr("fill", function(d) {
 			if (d[1]) {
-				return "antiquewhite";
+				return "#fbf9f3white";
 			} else {
 				return "#313639";
 			}
@@ -951,7 +951,7 @@ function drawClearButton() {
 				.attr("y", 254)
 				.style("font", "10px sans-serif")
 				.attr("text-anchor", "middle")
-				.attr("fill", "antiquewhite")
+				.attr("fill", "#fbf9f3white")
 				.text("clear")
 				.on("mouseover", function(d) {
 					d3.select(this).style("cursor", "pointer");
