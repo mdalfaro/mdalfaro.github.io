@@ -383,12 +383,13 @@ function drawLineChart(player) {
 
     lineTooltips(line_graph);
     
-    // Create the line
+    // Create historical line
     line_graph.append("path")
       .data([player_data])
       .attr("fill", "none")
+      .attr("class", "lines")
       .attr("id", function(d) {
-        return player.name;
+        return player.name.replace(/ /g,'');
       })
       .style("stroke", "black")
       .style("stroke-width", "0.5px")
@@ -403,8 +404,14 @@ function drawLineChart(player) {
       .attr("fill", "black")
       .text(player.name)
       .on("mouseover", function(d){
+      	var playerid = player.name.replace(/ /g,'')
+        //d3.select("#" + playerid).style("stroke", "rgb(220, 220, 220)");
+        //d3.select("#" + playerid).style("opacity", .5);
+      	
+      	d3.select("#" + playerid).style("stroke-width", 3);
+      	d3.select("#" + playerid).style("stroke", "#6EA4BB")
 
-        console.log()
+      	//d3.selectAll("line_graph:not(#" + playerid + ")").style("stroke", "gray");
 
         d3.select(this)
           .style("fill", "#6EA4BB")
@@ -416,8 +423,14 @@ function drawLineChart(player) {
           })
       })
       .on("mouseout",function(d){ 
+
         d3.select(this)
-          .style('fill', 'black')
+          .style('fill', 'black');
+
+        var playerid = player.name.replace(/ /g,'')
+        d3.select("#" + playerid).style("stroke-width", '0.5px')
+        d3.select("#" + playerid).style("stroke", "black")
+
       });
 
     // Game circles
@@ -427,13 +440,17 @@ function drawLineChart(player) {
        .append('circle')
        .style("fill", "black")
        .attr('r', 2)
+       .attr("id", function(d) {
+       		console.log(player.name.replace(/ /g,''))
+        	return player.name.replace(/ /g,'');
+      	})
        .on("mouseover", function(d) {
           d3.select(this).style("cursor", "pointer");
         })
        .attr("cx", function(d) { return x_line(d.Date)})
        .attr("cy", function(d) { return y_line(d.PTS)})
        .attr("id", function(d) {
-          return player.name
+          return player.name.replace(/ /g,'');
         })
        .on("mousemove", function(d) {
 
@@ -490,20 +507,30 @@ function drawLineChart(player) {
       pair = [{Date:future_date, PTS:projections[i]}, 
               {Date:previous_game_date, PTS:previous_game_pts}]
 
-      // Create the line
-      svg.append("path")
+      // Create projection line
+      line_graph.append("path")
         .data([pair])
         .attr("fill", "none")
         .style("stroke", "black")
         .style("stroke-width", "0.5px")
         .style("stroke-dasharray", ("3, 3"))
         .attr("class", "proj_line")
-        .attr("transform", "translate(" + margin_line.left + "," + margin_line.top + ")")
         .attr("d", valueline)
         .attr("id", function(d) {
-          return player.name
+        	player.name.replace(/ /g,'');
+        })
+        .on("mouseover", function(d){
+
+          // activate tooltip
+          svg.select('.line_tooltip').style('display', null); 
+
+          // highlight circle
+          d3.select(this)
+            .style("fill", "#6EA4BB")
+            .style("cursor", "pointer");
+
         });
-      }
+      } 
 
   });
 }
