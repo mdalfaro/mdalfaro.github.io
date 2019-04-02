@@ -393,57 +393,16 @@ function drawLineChart(player) {
       })
       .style("stroke", "black")
       .style("stroke-width", "0.5px")
-      .attr("class", "hist_line")
       .attr("d", valueline);
-
-    line_graph.append("text")
-      .attr("y", y_line(player.fpts) - 5)
-      .attr("x", x_line(future_date) + 5)
-      .attr("dy", "0.71em")
-      .style("font", "10px sans-serif")
-      .attr("fill", "black")
-      .text(player.name)
-      .on("mouseover", function(d){
-      	var playerid = player.name.replace(/ /g,'')
-        //d3.select("#" + playerid).style("stroke", "rgb(220, 220, 220)");
-        //d3.select("#" + playerid).style("opacity", .5);
-      	
-      	d3.select("#" + playerid).style("stroke-width", 3);
-      	d3.select("#" + playerid).style("stroke", "#6EA4BB")
-
-      	//d3.selectAll("line_graph:not(#" + playerid + ")").style("stroke", "gray");
-
-        d3.select(this)
-          .style("fill", "#6EA4BB")
-          .style("cursor", "pointer");
-
-        d3.select('#' + player.name)
-          .style("stroke", function(d) {
-            return "6EA4BB"
-          })
-      })
-      .on("mouseout",function(d){ 
-
-        d3.select(this)
-          .style('fill', 'black');
-
-        var playerid = player.name.replace(/ /g,'')
-        d3.select("#" + playerid).style("stroke-width", '0.5px')
-        d3.select("#" + playerid).style("stroke", "black")
-
-      });
 
     // Game circles
     line_graph.selectAll("circle")
        .data(player_data)
        .enter()
        .append('circle')
+       .attr('class', 'history')
        .style("fill", "black")
        .attr('r', 2)
-       .attr("id", function(d) {
-       		console.log(player.name.replace(/ /g,''))
-        	return player.name.replace(/ /g,'');
-      	})
        .on("mouseover", function(d) {
           d3.select(this).style("cursor", "pointer");
         })
@@ -464,8 +423,7 @@ function drawLineChart(player) {
           tooltip.select('text.line_3')
             .text(`${(d.PTS)}`);
           tooltip
-            .attr('transform', `translate(${[d3.mouse(this)[0], d3.mouse(this)[1]]})`);
-            //.attr('transform', `translate(${[x_line(d.Date), y_line(d.PTS)-10]})`)
+            .attr('transform', `translate(${[d3.mouse(this)[0], d3.mouse(this)[1]]})`)
         })
        .on("mouseover", function(d){
 
@@ -517,7 +475,7 @@ function drawLineChart(player) {
         .attr("class", "proj_line")
         .attr("d", valueline)
         .attr("id", function(d) {
-        	player.name.replace(/ /g,'');
+          return player.name.replace(/ /g,'');
         })
         .on("mouseover", function(d){
 
@@ -530,7 +488,55 @@ function drawLineChart(player) {
             .style("cursor", "pointer");
 
         });
-      } 
+    } 
+
+    line_graph.append("text")
+    .attr("y", y_line(player.fpts) - 5)
+    .attr("x", x_line(future_date) + 5)
+    .attr("dy", "0.71em")
+    .style("font", "10px sans-serif")
+    .attr("fill", "black")
+    .text(player.name)
+    .on("mouseover", function(d){
+
+      // Highlight Text
+      d3.select(this)
+        .style("fill", "#6EA4BB")
+        .style("cursor", "pointer");
+
+      var playerid = player.name.replace(/ /g,'')
+
+      // Highlight line
+      d3.select("#" + playerid).style("stroke-width", 2)
+                               .style("stroke", "#6EA4BB");
+      // Highlight circle 
+
+      // Diminish circles
+      d3.selectAll('circle:not(#' + playerid).style("opacity", "0.1");
+      // Diminish all other lines
+      d3.selectAll('path:not(#' + playerid).style("opacity", "0.1");
+
+      // Highlight text
+      d3.select('#' + player.name)
+        .style("stroke", function(d) {
+          return "6EA4BB"
+      })
+    })
+    .on("mouseout",function(d){ 
+
+      // Tooltips
+      d3.select(this)
+        .style('fill', 'black');
+
+      var playerid = player.name.replace(/ /g,'')
+
+      // Revert everything back 
+      d3.select("#" + playerid).style("stroke-width", '0.5px')
+                               .style("stroke", "black");
+      d3.selectAll('circle').style("opacity", "1");
+      d3.selectAll('path').style("opacity", "1");
+
+      });
 
   });
 }
