@@ -23,6 +23,21 @@ const xAxis = d3.axisBottom(x),
 
 var parseTime = d3.timeParse("%Y-%m-%d");
 
+d3.selection.prototype.moveToFront = function() {
+  return this.each(function(){
+    this.parentNode.appendChild(this);
+  });
+};
+
+d3.selection.prototype.moveToBack = function() {  
+        return this.each(function() { 
+            var firstChild = this.parentNode.firstChild; 
+            if (firstChild) { 
+                this.parentNode.insertBefore(this, firstChild); 
+            } 
+        });
+};
+
 d3.csv("projections.csv", function(error, fantasy_data) {
   if (error) {throw error};
   data = []
@@ -70,7 +85,6 @@ d3.csv("projections.csv", function(error, fantasy_data) {
       .call(xAxis);
   focus.select('.axis--x')
       .selectAll("text")
-      .remove();
       //.style("text-anchor", "end")
       //.attr("dx", "-.8em")
       //.attr("dy", ".15em")
@@ -132,7 +146,7 @@ function lineTooltips(line_graph) {
     .attr("x", -42)
     .attr("fill", "#6EA4BB")
     .style("text-anchor", "middle")
-    .style("opacity", 0.9);
+    .style("opacity", 0.95);
   tooltip.append("text")
     .attr('class', 'line_1')
     .attr("x", 0)
@@ -201,6 +215,11 @@ function updateMiniBars(){
 
 }
 
+function move_tooltip_to_front() {
+  svg.select('.line_tooltip')
+     .moveToFront()
+}
+
 function update() {
   displayed = 0;
   let bar = focus.selectAll(".bar")
@@ -229,7 +248,8 @@ function update() {
     .on("mouseover", function(d){
 
       // activate tooltip
-      svg.select('.bar_tooltip').style('display', null); 
+      svg.select('.bar_tooltip')
+         .style('display', null); 
 
       // highlight bar
       d3.select(this)
@@ -247,7 +267,7 @@ function update() {
           .style("cursor", "pointer");
       } else {
         d3.select(this)
-          .style("fill", "#6EA4BB") 
+          .style("fill", "#6EA4BB") // BLUE
           .style("cursor", "pointer");
       }
     })
@@ -264,15 +284,26 @@ function update() {
     .on("click", function(d){
       d.clicked = !d.clicked
       if (d.clicked) {
+
+        // Highlight bar 
         d3.select(this)
           .style("fill", "#FAFB97")
           .style("cursor", "pointer");
+
+        // Draw line chart
+        drawLineChart(d);
+
       } else {
+
+        // Remove line chart
+        var playerid = d.name.replace(/[\W_]+/g, "");
+        d3.selectAll("#" + playerid).remove("*");
+
+        // Revert bar color
         d3.select(this)
           .style("fill", "#6EA4BB")
           .style("cursor", "pointer");
       }
-      drawLineChart(d);
       //makePlayerCard(d);
     });
 
@@ -293,6 +324,7 @@ function updateAxis() {
   axis_x.selectAll("text")
       .remove();
 
+  // display names
   /*
   if (displayed >= 50) {
     axis_x.selectAll("text")
@@ -319,7 +351,8 @@ function updateContext(min, max) {
 }
 
 function brushed() {
-  if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
+  // below doesn't seem to do anything
+  //if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
   var s = d3.event.selection || x2.range();
   current_range = [Math.round(s[0] / (width/data.length)), Math.round(s[1] / (width/data.length))];
   x.domain(data.slice(current_range[0], current_range[1]).map(ft => ft.name));
@@ -348,6 +381,8 @@ var valueline = d3.line()
     .y(function(d) { return y_line(d.PTS); })
     .curve(d3.curveCardinal); // curveStepBefore
 
+var initialized = false; 
+
 function drawLineChart(player) {
 
   var filepath = 'player_history/' + player.name + '.csv'
@@ -361,25 +396,32 @@ function drawLineChart(player) {
         d.opp = d.opp;
     });
 
-    //x_line.domain([d3.min(player_data, function(d) { return d.Date; }), player.Date])
-    future_date = parseTime('2019-05-01')
-    x_line.domain([d3.min(player_data, function(d) { return d.Date; }), future_date])
-    y_line.domain([0, 100])
-
-    // Create the line group
     const line_graph = svg.append("g")
         .attr("class", "line_graph")
-        .attr("transform", "translate(" + margin_line.left + "," + margin_line.top + ")");
+        .attr("transform", "translate(" + margin_line.left + "," + margin_line.top + ")")
 
-    // Create the axes
-    line_graph.append("g")
-        .attr("class", "line_x_axis")
-        .attr("transform", "translate(0," + height_line + ")")
-        .call(xAxis_line
-          .tickFormat(formatDate).ticks(5));
-    line_graph.append("g")
-        .attr("class", "line_y_axis")
-        .call(yAxis_line)
+
+    // Initialize intially
+    if (initialized == false) {
+
+      //x_line.domain([d3.min(player_data, function(d) { return d.Date; }), player.Date])
+      future_date = parseTime('2019-05-01')
+      x_line.domain([d3.min(player_data, function(d) { return d.Date; }), future_date])
+      y_line.domain([0, 70])
+
+      // Create the axes
+      line_graph.append("g")
+          .attr("class", "line_x_axis")
+          .attr("transform", "translate(0," + height_line + ")")
+          .call(xAxis_line
+            .tickFormat(formatDate).ticks(5));
+      line_graph.append("g")
+          .attr("class", "line_y_axis")
+          .call(yAxis_line
+            .ticks(5));
+
+      initialized = true
+    }
 
     lineTooltips(line_graph);
     
@@ -389,7 +431,7 @@ function drawLineChart(player) {
       .attr("fill", "none")
       .attr("class", "lines")
       .attr("id", function(d) {
-        return player.name.replace(/ /g,'');
+        return player.name.replace(/[\W_]+/g, "");
       })
       .style("stroke", "black")
       .style("stroke-width", "0.5px")
@@ -403,13 +445,11 @@ function drawLineChart(player) {
        .attr('class', 'history')
        .style("fill", "black")
        .attr('r', 2)
-       .on("mouseover", function(d) {
-          d3.select(this).style("cursor", "pointer");
-        })
        .attr("cx", function(d) { return x_line(d.Date)})
        .attr("cy", function(d) { return y_line(d.PTS)})
        .attr("id", function(d) {
-          return player.name.replace(/ /g,'');
+          //console.log('here')
+          return player.name.replace(/[\W_]+/g, "");
         })
        .on("mousemove", function(d) {
 
@@ -427,8 +467,13 @@ function drawLineChart(player) {
         })
        .on("mouseover", function(d){
 
+          d3.select(this).style("cursor", "pointer");
+          move_tooltip_to_front();
+
+
           // activate tooltip
-          svg.select('.line_tooltip').style('display', null); 
+          svg.select('.line_tooltip')
+             .style('display', null);
 
           // highlight circle
           d3.select(this)
@@ -459,9 +504,6 @@ function drawLineChart(player) {
 
     for (i=0; i < projections.length; i++) {
 
-      //pair = [{Date:player.Date, PTS:projections[i]}, 
-      //        {Date:previous_game_date, PTS:previous_game_pts}]
-
       pair = [{Date:future_date, PTS:projections[i]}, 
               {Date:previous_game_date, PTS:previous_game_pts}]
 
@@ -475,12 +517,13 @@ function drawLineChart(player) {
         .attr("class", "proj_line")
         .attr("d", valueline)
         .attr("id", function(d) {
-          return player.name.replace(/ /g,'');
+          return player.name.replace(/[\W_]+/g, "");
         })
-        .on("mouseover", function(d){
+        .on("mouseover", function(d) {
 
           // activate tooltip
-          svg.select('.line_tooltip').style('display', null); 
+          svg.select('.line_tooltip')
+             .style('display', null); 
 
           // highlight circle
           d3.select(this)
@@ -494,6 +537,10 @@ function drawLineChart(player) {
     .attr("y", y_line(player.fpts) - 5)
     .attr("x", x_line(future_date) + 5)
     .attr("dy", "0.71em")
+    .attr("class", "playername")
+    .attr("id", function(d) {
+        return player.name.replace(/[\W_]+/g, "");
+    })
     .style("font", "10px sans-serif")
     .attr("fill", "black")
     .text(player.name)
@@ -504,20 +551,38 @@ function drawLineChart(player) {
         .style("fill", "#6EA4BB")
         .style("cursor", "pointer");
 
-      var playerid = player.name.replace(/ /g,'')
+      var playerid = player.name.replace(/[\W_]+/g, "");
 
       // Highlight line
-      d3.select("#" + playerid).style("stroke-width", 2)
-                               .style("stroke", "#6EA4BB");
+      d3.selectAll("#" + playerid)
+        .selectAll('.lines')
+          .style("stroke-width", 2)
+          .style("stroke", "#6EA4BB")
+
+      // Highlight projection
+      d3.selectAll("#" + playerid)
+        .selectAll('.proj_line')
+          .style("stroke", "#6EA4BB");
+
+      d3.selectAll("#" + playerid)
+        .selectAll('circle')
+          .style("fill", "#6EA4BB");
+
+      //d3.selectAll('proj_line.(#' + playerid + ')')
+      //  .style("stroke", "#6EA4BB");
+
       // Highlight circle 
 
-      // Diminish circles
+      // Diminish all other circles
       d3.selectAll('circle:not(#' + playerid).style("opacity", "0.1");
       // Diminish all other lines
-      d3.selectAll('path:not(#' + playerid).style("opacity", "0.1");
+      d3.selectAll('.lines:not(#' + playerid).style("opacity", "0.1");
+      d3.selectAll('.proj_line:not(#' + playerid).style("opacity", "0.1");
+      // Diminish all other names
+      d3.selectAll('.playername:not(#' + playerid).style("opacity", "0.1");
 
       // Highlight text
-      d3.select('#' + player.name)
+      d3.select('#' + player.name.replace(/[\W_]+/g, ""))
         .style("stroke", function(d) {
           return "6EA4BB"
       })
@@ -528,12 +593,13 @@ function drawLineChart(player) {
       d3.select(this)
         .style('fill', 'black');
 
-      var playerid = player.name.replace(/ /g,'')
+      var playerid = player.name.replace(/[\W_]+/g, "");
 
       // Revert everything back 
       d3.select("#" + playerid).style("stroke-width", '0.5px')
                                .style("stroke", "black");
       d3.selectAll('circle').style("opacity", "1");
+      d3.selectAll('text').style("opacity", "1");
       d3.selectAll('path').style("opacity", "1");
 
       });
