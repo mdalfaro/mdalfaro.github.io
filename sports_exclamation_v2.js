@@ -394,6 +394,7 @@ function drawLineChart(player) {
         d.Date = parseTime(d.Date);
         d.PTS = +d.PTS;
         d.opp = d.opp;
+        d.clicked = false;
     });
 
     const line_graph = svg.append("g")
@@ -469,7 +470,6 @@ function drawLineChart(player) {
 
           d3.select(this).style("cursor", "pointer");
           move_tooltip_to_front();
-
 
           // activate tooltip
           svg.select('.line_tooltip')
@@ -568,11 +568,6 @@ function drawLineChart(player) {
         .selectAll('circle')
           .style("fill", "#6EA4BB");
 
-      //d3.selectAll('proj_line.(#' + playerid + ')')
-      //  .style("stroke", "#6EA4BB");
-
-      // Highlight circle 
-
       // Diminish all other circles
       d3.selectAll('circle:not(#' + playerid).style("opacity", "0.1");
       // Diminish all other lines
@@ -581,11 +576,10 @@ function drawLineChart(player) {
       // Diminish all other names
       d3.selectAll('.playername:not(#' + playerid).style("opacity", "0.1");
 
-      // Highlight text
+      // Highlight text (hacky way)
       d3.select('#' + player.name.replace(/[\W_]+/g, ""))
-        .style("stroke", function(d) {
-          return "6EA4BB"
-      })
+        //.style("stroke", function(d) {return "6EA4BB"})
+        .style("stroke-width", 1.2);
     })
     .on("mouseout",function(d){ 
 
