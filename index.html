@@ -1,20 +1,15 @@
 <!DOCTYPE html>
-
-<head>
-	<title>mdalfaro</title>
-	<link rel="shortcut icon" type="image/png" href="/favicon.png"/>
-	<link rel="shortcut icon" type="image/png" href="https://github.com/mdalfaro/mdalfaro.github.io/favicon.png"/>
-</head>
 <meta charset="utf-8">
+
+<body style="background-color:#fbf9f3;">
+
 <style>
 
-.area {
-  fill: steelblue;
-  clip-path: url(#clip);
-}
+@import url('https://fonts.googleapis.com/css?family=Patrick+Hand|Signika|Dosis');
 
-.axis text {
-  font: 10px sans-serif;
+.area {
+  fill: #6EA4BB;
+  clip-path: url(#clip);
 }
 
 .zoom {
@@ -23,7 +18,25 @@
   pointer-events: all;
 }
 
+.axis--y > .domain, .axis--x > .domain{
+  stroke: #BEBEBE;
+}
+
+.axis--y > g.tick > line, .axis--x > g.tick > line{
+  stroke: #BEBEBE;
+}
+
+#var_name {
+  margin-left: 60px;
+  margin-bottom: 5px;
+  font-family: 'Dosis', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+}
 </style>
-<svg width="960" height="500"></svg>
+<svg width="1500" height="800"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
-<script type = "text/javascript" src = "area.js"></script>
+<script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
+
+<!-- Call Javascript file -->
+<script type = "text/javascript" src = "sports_exclamation_v2.js"></script>
