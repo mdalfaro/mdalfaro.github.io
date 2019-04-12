@@ -11,12 +11,24 @@ const margin = { top: 20, right: 720, bottom: 310, left: 40 },
       height2 = +svg.attr("height") - margin2.top - margin2.bottom,
       height_line = +svg.attr("height") - margin_line.top - margin_line.bottom;
 
-//var svg_radial = d3.select("body").append("svg")
-//    .attr("width", width_radial)
-//    .attr("height", height_radial)
-//  .append("g")
-//    .attr("transform", "translate(" + margin_radial.left + "," + margin_radial.top + ")");
+// text label for the x axis
+svg.append("text")             
+    .attr("transform",
+          "translate(" + (width/2) + " ," + 
+                         (height + margin.top + 20) + ")")
+    .style("text-anchor", "middle")
+    .attr("font-size", "11px")
+    .text("Available Players");
 
+// text label for the y axis
+svg.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("y", 0)
+    .attr("x",0 - (height / 2))
+    .attr("dy", "1em")
+    .attr("font-size", "11px")
+    .style("text-anchor", "middle")
+    .text("Projected Fantasy Points");
 
 const x = d3.scaleBand().range([0, width]).padding(0.1),
       x2 = d3.scaleBand().range([0, width]).padding(0.1),
@@ -201,6 +213,7 @@ function updateMiniBars(){
     .attr("transform", "translate(0," + height2 + ")")
     .call(xAxis2)
 
+  // remove names
   context.select('.axis--x')
       .selectAll("text")
       .remove();
