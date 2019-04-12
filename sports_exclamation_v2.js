@@ -1,5 +1,8 @@
-const svg = d3.select("svg"),
-      margin = { top: 20, right: 720, bottom: 310, left: 40 },
+const svg = d3.select("body").append("svg")
+              .attr("width", 1500)
+              .attr("height", 800)
+
+const margin = { top: 20, right: 720, bottom: 310, left: 40 },
       margin2 = { top: 530, right: 20, bottom: 230, left: 40 },
       margin_line = { top: 200, right: 210, bottom: 310, left: 850 },
       width = +svg.attr("width") - margin.left - margin.right,
@@ -7,6 +10,13 @@ const svg = d3.select("svg"),
       height = +svg.attr("height") - margin.top - margin.bottom,
       height2 = +svg.attr("height") - margin2.top - margin2.bottom,
       height_line = +svg.attr("height") - margin_line.top - margin_line.bottom;
+
+//var svg_radial = d3.select("body").append("svg")
+//    .attr("width", width_radial)
+//    .attr("height", height_radial)
+//  .append("g")
+//    .attr("transform", "translate(" + margin_radial.left + "," + margin_radial.top + ")");
+
 
 const x = d3.scaleBand().range([0, width]).padding(0.1),
       x2 = d3.scaleBand().range([0, width]).padding(0.1),
@@ -30,12 +40,12 @@ d3.selection.prototype.moveToFront = function() {
 };
 
 d3.selection.prototype.moveToBack = function() {  
-        return this.each(function() { 
-            var firstChild = this.parentNode.firstChild; 
-            if (firstChild) { 
-                this.parentNode.insertBefore(this, firstChild); 
-            } 
-        });
+  return this.each(function() { 
+      var firstChild = this.parentNode.firstChild; 
+      if (firstChild) { 
+          this.parentNode.insertBefore(this, firstChild); 
+      } 
+  });
 };
 
 d3.csv("projections.csv", function(error, fantasy_data) {
@@ -55,25 +65,22 @@ d3.csv("projections.csv", function(error, fantasy_data) {
     };
     data.push(player); 
   })
-
-  // Sort 
   data.sort((a, b) => b.fpts - a.fpts);
 
   // Set domains
-  x.domain(data.map(ft => ft.name));
-  y.domain([d3.min(data, d => d.fpts), d3.max(data, d => d.fpts)]);
+  x.domain(data.map(function(d) { return d.name}));
+  y.domain([0, 70]);
   x2.domain(x.domain());
   y2.domain(y.domain());
 
   // Brush & Zoom
   brush = d3.brushX()
       .extent([[0, 0], [width, height2]])
-      .on("brush end", brushed);
+      .on("brush end", (brushed));
   zoom = d3.zoom()
     .scaleExtent([1, Infinity])
     .translateExtent([[0, 0], [width, height]])
     .extent([[0, 0], [width, height]]);
-    //.on("zoom", zoomed());
 
   // Create focus (larger bar chart)
   focus = svg.append("g")
@@ -83,12 +90,6 @@ d3.csv("projections.csv", function(error, fantasy_data) {
       .attr("class", "axis axis--x")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
-  focus.select('.axis--x')
-      .selectAll("text")
-      //.style("text-anchor", "end")
-      //.attr("dx", "-.8em")
-      //.attr("dy", ".15em")
-      //.attr("transform", "rotate(-65)");
   focus.append("g")
       .attr("class", "axis axis--y")
       .call(yAxis);
@@ -105,8 +106,6 @@ d3.csv("projections.csv", function(error, fantasy_data) {
   updateMiniBars();
   barTooltips();
 });
-
-
 
 function barTooltips() {
   var tooltip = svg.append("g")
@@ -176,13 +175,6 @@ function lineTooltips(line_graph) {
 function updateMiniBars(){
   let mini_bars = context.selectAll(".bar")
       .data(data);
-
-  mini_bars
-      .attr("x", d => x2(d.name))
-      .attr("width", x2.bandwidth())
-      .attr("y", d => y2(d.fpts))
-      .attr("height", d => height2 - y2(d.fpts))
-      .style('fill', "6EA4BB");
 
   mini_bars
       .enter()
@@ -351,8 +343,6 @@ function updateContext(min, max) {
 }
 
 function brushed() {
-  // below doesn't seem to do anything
-  //if (d3.event.sourceEvent && d3.event.sourceEvent.type === "zoom") return; // ignore brush-by-zoom
   var s = d3.event.selection || x2.range();
   current_range = [Math.round(s[0] / (width/data.length)), Math.round(s[1] / (width/data.length))];
   x.domain(data.slice(current_range[0], current_range[1]).map(ft => ft.name));
@@ -361,17 +351,10 @@ function brushed() {
       .translate(-current_range[0], 0));
   update();
   updateAxis();
-  updateContext(current_range[0], current_range[1]);
+  var min = current_range[0]
+  var max = current_range[1]
+  updateContext(min, max);
 }
-
-// function zoomed() {
-//   if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
-//   var t = d3.event.transform;
-//   x.domain(t.rescaleX(x2).domain());
-//   focus.select(".area").attr("d", area);
-//   focus.select(".axis--x").call(xAxis);
-//   context.select(".brush").call(brush.move, x.range().map(t.invertX, t));
-// }
 
 var formatDate = d3.timeFormat("%b %d, %Y")
 
@@ -379,7 +362,7 @@ var formatDate = d3.timeFormat("%b %d, %Y")
 var valueline = d3.line()
     .x(function(d) { return x_line(d.Date); })
     .y(function(d) { return y_line(d.PTS); })
-    .curve(d3.curveCardinal); // curveStepBefore
+    .curve(d3.curveCardinal);
 
 var initialized = false; 
 
@@ -568,18 +551,10 @@ function drawLineChart(player) {
         .selectAll('circle')
           .style("fill", "#6EA4BB");
 
-      // Diminish all other circles
       d3.selectAll('circle:not(#' + playerid).style("opacity", "0.1");
-      // Diminish all other lines
       d3.selectAll('.lines:not(#' + playerid).style("opacity", "0.1");
       d3.selectAll('.proj_line:not(#' + playerid).style("opacity", "0.1");
-      // Diminish all other names
       d3.selectAll('.playername:not(#' + playerid).style("opacity", "0.1");
-
-      // Highlight text (hacky way)
-      d3.select('#' + player.name.replace(/[\W_]+/g, ""))
-        //.style("stroke", function(d) {return "6EA4BB"})
-        .style("stroke-width", 1.2);
     })
     .on("mouseout",function(d){ 
 
