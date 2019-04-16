@@ -3,39 +3,23 @@
 
 <body style="background-color:#fbf9f3;">
 
-<style>
+<head>
+  <style>
+  .axis {
+    font: 10px sans-serif;
+  }
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+  }
+  </style>
+</head>
 
-@import url('https://fonts.googleapis.com/css?family=Patrick+Hand|Signika|Dosis');
+<body>
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script type = "text/javascript" src = "timebars_2.js"></script>
+</body>
 
-.area {
-  fill: #6EA4BB;
-  clip-path: url(#clip);
-}
 
-.zoom {
-  cursor: move;
-  fill: none;
-  pointer-events: all;
-}
-
-.axis--y > .domain, .axis--x > .domain{
-  stroke: #BEBEBE;
-}
-
-.axis--y > g.tick > line, .axis--x > g.tick > line{
-  stroke: #BEBEBE;
-}
-
-#var_name {
-  margin-left: 60px;
-  margin-bottom: 5px;
-  font-family: 'Dosis', sans-serif;
-  font-size: 22px;
-  font-weight: 800;
-}
-</style>
-<script src="https://d3js.org/d3.v4.min.js"></script>
-<script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
-
-<!-- Call Javascript file -->
-<script type = "text/javascript" src = "sports_exclamation_v2.js"></script>
