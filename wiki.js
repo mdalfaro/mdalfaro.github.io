@@ -107,7 +107,7 @@ d3.csv("wiki_history.csv").then(function(data) {
 });
 
 // Get the data
-d3.csv("forecasts.csv").then(function(data) {
+d3.csv("forecast.csv").then(function(data) {
 
   // format the data
   data.forEach(function(d) {
