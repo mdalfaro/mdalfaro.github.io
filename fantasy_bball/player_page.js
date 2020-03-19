@@ -196,24 +196,17 @@ d3.csv("data/fanduel.csv", function(error, input_data) {
 		.attr("r", 80)
 		.style("fill", "#fbf9f3");
 
-	try {
-		console.log(window.location.pathname)
-		playercard.append("svg:image")
-			.attr('x', 0)
-			.attr('y', 0)
-			.attr('width', 190)
-			.attr('height', 190)
-			.attr("xlink:href", 'https://raw.githubusercontent.com/mdalfaro/mdalfaro.github.io/master/fantasy_bball/images/' + input[1] + '%2C%20'+ input[0] + '.png')
-			//.attr("xlink:href", '/images/' + player_name + '.png')
-	}
-	catch(err) {
-		playercard.append("svg:image")
-					.attr('x', 0)
-					.attr('y', 0)
-					.attr('width', 190) //190
-					.attr('height', 190) //190
-					.attr("xlink:href", '/images/jrp.png')
-	}
+
+
+	playercard.append("svg:image")
+		.attr('x', 0)
+		.attr('y', 0)
+		.attr('width', 190)
+		.attr('height', 190)
+		.attr("xlink:href", 'https://raw.githubusercontent.com/mdalfaro/mdalfaro.github.io/master/fantasy_bball/images/' + input[1] + '%2C%20'+ input[0] + '.png')
+		.on("error", function(d){
+        	this.setAttribute("xlink:href", "https://theundefeated.com/wp-content/uploads/2017/06/nbalogo.jpg");
+    	})
 
 	playercard.append("circle")
 		.attr("cx", 95)
@@ -724,21 +717,6 @@ function create_arcs(date_range) {
           d3.select(this)
           	.moveToFront()
             .style("cursor", "pointer");
-
-		/*
-          d3.select(this)
-			.append("text")
-			.attr("x", 10)
-			.attr("y", 10)
-			.attr("font-family", "sans-serif")
-			.style("fill", "black")
-			.style("font-size", 20)
-			.attr("font-variant", "small-caps")
-			.text(function(d) {
-				console.log(d)
-			})
-		*/
-
         })
         .on("mouseout", function(d, i){ 
           var orig_color = (i%2==0) ? colorDict[data[0].team]['alt'] : "#E7E7E6"
