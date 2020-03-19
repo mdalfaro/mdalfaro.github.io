@@ -203,7 +203,7 @@ d3.csv("data/fanduel.csv", function(error, input_data) {
 			.attr('y', 0)
 			.attr('width', 190)
 			.attr('height', 190)
-			.attr("xlink:href", 'https://raw.githubusercontent.com/mdalfaro/mdalfaro.github.io/master/fantasy_bball/images/Griffin%2C%20Blake.png')
+			.attr("xlink:href", 'https://raw.githubusercontent.com/mdalfaro/mdalfaro.github.io/master/fantasy_bball/images/' + input[1] + '%2C%20'+ input[0] + '.png')
 			//.attr("xlink:href", '/images/' + player_name + '.png')
 	}
 	catch(err) {
