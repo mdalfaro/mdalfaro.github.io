@@ -445,7 +445,6 @@ function drawLineChart(player) {
        .attr("cx", function(d) { return x_line(d.Date)})
        .attr("cy", function(d) { return y_line(d.PTS)})
        .attr("id", function(d) {
-          //console.log('here')
           return player.name.replace(/[\W_]+/g, "");
         })
        .on("mousemove", function(d) {
@@ -541,7 +540,9 @@ function drawLineChart(player) {
     .attr("fill", "black")
     .text(player.name)
     .on("click", function(d) {
-      console.log(player.name)
+      var first_name = player.name.split(' ')[0]
+      var last_name = player.name.split(' ')[1];
+      window.open("https://mdalfaro.github.io/fantasy_bball/index_player.html?Player=" + first_name + "-" + last_name);
     })
     .on("mouseover", function(d){
 
