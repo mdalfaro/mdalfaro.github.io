@@ -197,6 +197,7 @@ d3.csv("data/fanduel.csv", function(error, input_data) {
 		.style("fill", "#fbf9f3");
 
 	try {
+		console.log(window.location.pathname)
 		playercard.append("svg:image")
 			.attr('x', 0)
 			.attr('y', 0)
