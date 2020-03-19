@@ -135,9 +135,6 @@ var teamDict = {
 var input = getUrlVars()['Player'].split(/\s*\-\s*/g)
 var player_name = input[1] + ', ' + input[0]
 
-console.log(player_name)
-
-
 d3.csv("data/fanduel.csv", function(error, input_data) {
 
 	// ######## Create data #########
