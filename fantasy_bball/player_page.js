@@ -205,7 +205,7 @@ d3.csv("data/fanduel.csv", function(error, input_data) {
 		.attr('height', 190)
 		.attr("xlink:href", 'https://raw.githubusercontent.com/mdalfaro/mdalfaro.github.io/master/fantasy_bball/images/' + input[1] + '%2C%20'+ input[0] + '.png')
 		.on("error", function(d){
-        	this.setAttribute("xlink:href", "https://theundefeated.com/wp-content/uploads/2017/06/nbalogo.jpg");
+        	d3.select(this).attr("xlink:href", "https://theundefeated.com/wp-content/uploads/2017/06/nbalogo.jpg");
     	})
 
 	playercard.append("circle")
